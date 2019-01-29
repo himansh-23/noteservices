@@ -22,7 +22,7 @@ public class NotesServicesImpl implements NotesServices {
 	public void createNote(String token,NotesDTO notesDTO)throws NoteException
 	{
 		long id=TokenVerify.tokenVerifing(token);
-		System.out.println(id);
+	//	System.out.println(id);
 		notesDTO.setUserid(id);
 		Notes note = modelMapper.map(notesDTO, Notes.class);
 		note.setcreateStamp(LocalDate.now());

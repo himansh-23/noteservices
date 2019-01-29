@@ -16,7 +16,7 @@ public class NoteServiceExceptionHandler {
 		Response response=new Response();
 		response.setStatusCode(e.getErrorCode());
 		response.setStatusMessage(e.getErrorMsg());
-		return new ResponseEntity<Response>(response,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 	
 	@ExceptionHandler(Exception.class)
@@ -25,6 +25,6 @@ public class NoteServiceExceptionHandler {
 		Response response=new Response();
 		response.setStatusCode(100);
 		response.setStatusMessage(e.getMessage());
-		return new ResponseEntity<Response>(response,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 }

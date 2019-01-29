@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +34,7 @@ public class NotesController {
 	public ResponseEntity<Response> createNote(@RequestBody NotesDTO notesDTO,@RequestHeader("token")String token)throws NoteException
 	{
 		//String token1=request.getHeader("token");
-		System.out.println(token);
+	//	System.out.println(token);
 		//String token="";
 		noteServices.createNote(token, notesDTO);
 		Response response=new Response();
@@ -41,28 +43,34 @@ public class NotesController {
 		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 	
-	@PostMapping("/updatenote")
-	public ResponseEntity<String> updateNote(@RequestBody Notes notes, HttpServletRequest request)throws NoteException
+	@PutMapping("/updatenote")
+	public ResponseEntity<Response> updateNote(@RequestBody Notes notes,@RequestHeader("token")String token)throws NoteException
 	{ 
-		String token = request.getHeader("Authorization");
+//		String token = request.getHeader("Authorization");d
 		noteServices.updateNote(token,notes);
-		return new ResponseEntity<String>("Note Updated Successfully",HttpStatus.OK);
+		Response response=new Response();
+		response.setStatusCode(166);
+		response.setStatusMessage("Note Updated Successfully");
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 	
 	@PostMapping("/deletenote")
-	public ResponseEntity<String> deleteNote(@RequestBody Notes notes, HttpServletRequest request)throws NoteException
+	public ResponseEntity<Response> deleteNote(@RequestBody Notes notes,@RequestHeader("token")String token)throws NoteException
 	{
-		String token = request.getHeader("Authorization");
+		System.out.println("sss");
+		//String token = request.getHeader("Authorization");
 		noteServices.deleteNote(token, notes);
-		return new ResponseEntity<String>("Note Deleted Successfully",HttpStatus.OK);
+		Response response=new Response();
+		response.setStatusCode(166);
+		response.setStatusMessage("Note Deleted Successfully");
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 	
 	@GetMapping("/allnotes")
-	public ResponseEntity<List<Notes>> listAllNotes(@RequestHeader("token")String token,HttpServletRequest request)throws NoteException //@PathVariable("value") String value,
+	public ResponseEntity<List<Notes>> listAllNotes(@RequestHeader("token")String token)throws NoteException //@PathVariable("value") String value,
 	{
-		//System.out.println(value);
-//		String token = request.getHeader("Authorization");
 		List<Notes> list = noteServices.listAllNotes(token);
+		
 		return new ResponseEntity<List<Notes>>(list,HttpStatus.OK);
 	}
 	
