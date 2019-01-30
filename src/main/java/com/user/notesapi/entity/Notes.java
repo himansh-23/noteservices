@@ -3,15 +3,21 @@ package com.user.notesapi.entity;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
+@Setter
+@Getter
 public class Notes implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -53,102 +59,9 @@ public class Notes implements Serializable {
 	
 	private LocalDateTime remainder; 
 	
-	public boolean isPinned() {
-		return isPinned;
-	}
-
-	public void setPinned(boolean isPinned) {
-		this.isPinned = isPinned;
-	}
-
-	public String getColor() {
-		return color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
-
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
-
-	public boolean isArchive() {
-		return archive;
-	}
-
-	public void setArchive(boolean archive) {
-		this.archive = archive;
-	}
-
-	public boolean isTrash() {
-		return trash;
-	}
-
-	public void setTrash(boolean trash) {
-		this.trash = trash;
-	}
-
-	public LocalDateTime getRemainder() {
-		return remainder;
-	}
-
-	public void setRemainder(LocalDateTime remainder) {
-		this.remainder = remainder;
-	}
-
-	public long getId() {
-		return id;
-	}
+	@ManyToMany(mappedBy="notes")
+	private Set<Labels> labels;
 	
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public long getUserid() {
-		return userid;
-	}
-
-	public void setUserid(long userid) {
-		this.userid = userid;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public LocalDate getcreateStamp() {
-		return createStamp;
-	}
-
-	public void setcreateStamp(LocalDate createStamp) {
-		this.createStamp = createStamp;
-	}
-
-	public LocalDate getlastModifiedStamp() {
-		return lastModifiedStamp;
-	}
-
-	public void setlastModifiedStamp(LocalDate lastModifiedStamp) {
-		this.lastModifiedStamp = lastModifiedStamp;
-	}
-
 	@Override
 	public String toString() {
 		return "Notes [id=" + id + ", userid=" + userid + ", title=" + title + ", content=" + content + ", createStamp="

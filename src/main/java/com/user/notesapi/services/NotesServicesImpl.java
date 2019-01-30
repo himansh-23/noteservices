@@ -25,15 +25,15 @@ public class NotesServicesImpl implements NotesServices {
 	//	System.out.println(id);
 		notesDTO.setUserid(id);
 		Notes note = modelMapper.map(notesDTO, Notes.class);
-		note.setcreateStamp(LocalDate.now());
-		note.setlastModifiedStamp(LocalDate.now());
+		note.setCreateStamp(LocalDate.now());
+		note.setLastModifiedStamp(LocalDate.now());
 		notesRepository.save(note);
 	}
 	
 	public void updateNote(String token,Notes notes)throws NoteException
 	{
 		TokenVerify.tokenVerifing(token);
-		notes.setlastModifiedStamp(LocalDate.now());
+		notes.setLastModifiedStamp(LocalDate.now());
 		notesRepository.save(notes);
 	}
 	
