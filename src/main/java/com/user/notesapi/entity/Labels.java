@@ -2,7 +2,6 @@ package com.user.notesapi.entity;
 
 import java.io.Serializable;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,6 +11,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +22,9 @@ import lombok.Setter;
 @Setter
 public class Labels implements Serializable {
 
+//	@Autowired
+//	LabelsRepository labelrepo;
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
@@ -31,9 +36,18 @@ public class Labels implements Serializable {
 	private long userid;
 	
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name="Note_Labels" ,
+	@JoinTable(name="Note_Labels",
 	joinColumns= @JoinColumn(name="label_id",referencedColumnName="id"),
 	inverseJoinColumns= @JoinColumn(name ="notes_id",referencedColumnName="id"))
+	@JsonIgnore
 	private Set<Notes> notes;
+	
+	public Labels()
+	{
+		
+	}
+	
+	
+	
 	
 }

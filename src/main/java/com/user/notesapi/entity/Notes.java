@@ -12,12 +12,18 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Setter
 @Getter
+@ToString
 public class Notes implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -62,10 +68,21 @@ public class Notes implements Serializable {
 	@ManyToMany(mappedBy="notes")
 	private Set<Labels> labels;
 	
-	@Override
-	public String toString() {
-		return "Notes [id=" + id + ", userid=" + userid + ", title=" + title + ", content=" + content + ", createStamp="
-				+ createStamp + ", lastModifiedStamp=" + lastModifiedStamp + "]";
-	}
+//	public Notes(Notes notes)
+//	{
+//		this.userid=notes.getUserid();
+//		this.title=notes.title;
+//		this.content=notes.content;
+//		this.color=notes.color;
+//		this.createStamp=notes.createStamp;
+//		this.lastModifiedStamp=notes.lastModifiedStamp;
+//		this.image=notes.image;
+//		this.trash=notes.trash;
+//		this.remainder=notes.remainder;
+//		this.isPinned=notes.isPinned;
+//		this.archive=notes.archive;
+//				
+//	}
+	
 
 }
