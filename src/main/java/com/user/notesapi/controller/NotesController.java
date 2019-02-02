@@ -53,7 +53,7 @@ public class NotesController {
 	@PostMapping("/deletenote")
 	public ResponseEntity<Response> deleteNote(@RequestBody Notes notes,@RequestHeader("token")String token)throws NoteException
 	{
-		System.out.println("sss");
+	//	System.out.println("sss");
 		//String token = request.getHeader("Authorization");
 		noteServices.deleteNote(token, notes);
 		Response response=new Response();

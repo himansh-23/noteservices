@@ -6,8 +6,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.user.notesapi.dto.NotesDTO;
+import com.user.notesapi.entity.Labels;
 import com.user.notesapi.entity.Notes;
 import com.user.notesapi.exception.NoteException;
+import com.user.notesapi.repository.LabelsRepository;
 import com.user.notesapi.repository.NotesRepository;
 import com.user.notesapi.util.TokenVerify;
 
@@ -19,6 +21,9 @@ public class NotesServicesImpl implements NotesServices {
 	
 	@Autowired
 	NotesRepository notesRepository;
+	
+	@Autowired
+	LabelsRepository labelRepository;
 	public void createNote(String token,NotesDTO notesDTO)throws NoteException
 	{
 		long id=TokenVerify.tokenVerifing(token);
@@ -40,6 +45,9 @@ public class NotesServicesImpl implements NotesServices {
 	public void deleteNote(String token,Notes notes)throws NoteException
 	{
 		TokenVerify.tokenVerifing(token);
+	//	labelRepository
+		notes.getLabels().clear();
+		labelRepository.findAll().forEach(x ->this.removeNote(notes,x));
 		notesRepository.delete(notes);
 	}
 	
@@ -47,6 +55,12 @@ public class NotesServicesImpl implements NotesServices {
 	{
 		long id=TokenVerify.tokenVerifing(token);
 		return notesRepository.findAllById(id).orElseThrow(() -> new NoteException(101,"No Note Found"));
+	}
+	
+	private void removeNote(Notes notes,Labels l)
+	{
+		l.getNotes().remove(notes);
+		notesRepository.save(notes);
 	}
 	
 	/*public List<Notes> listAllPinnedNotes(String token)throws NoteException

@@ -16,10 +16,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
+@ToString
 public class Labels implements Serializable {
 
 //	@Autowired
@@ -41,13 +43,6 @@ public class Labels implements Serializable {
 	inverseJoinColumns= @JoinColumn(name ="notes_id",referencedColumnName="id"))
 	@JsonIgnore
 	private Set<Notes> notes;
-	
-	public Labels()
-	{
-		
-	}
-	
-	
 	
 	
 }

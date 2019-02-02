@@ -3,6 +3,7 @@ package com.user.notesapi.controller;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.omg.CORBA.UserException;
@@ -39,11 +40,14 @@ public class LabelsController {
 	@PostMapping("/create")
 	public ResponseEntity<Response> createLabel(@RequestBody Labels label,@RequestHeader String token) throws NoteException
 	{
-		long userid=0;
-	
+		long userid=35;
+	System.out.println("d1");
 		try {
 		 userid=TokenVerify.tokenVerifing(token);
+		 System.out.println("d2");
 		 label.setUserid(userid);
+		 System.out.println("d3");
+		 System.out.println(label);
 		}
 		catch(Exception e)
 		{
@@ -57,19 +61,20 @@ public class LabelsController {
 		
 		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
+	
 	@PostMapping("/addnotetolabel")
 	public ResponseEntity<Response> labelAddToNote(@RequestParam long noteid,@RequestParam long labelid)
 	{
 		Labels l=labelrepo.findById(labelid).get();
+		
 		Notes n=noterepo.findById(noteid).get();
+		
+	//	System.out.println("here");
 		n.getLabels().add(l);
+	//	System.out.println("here");
+		l.getNotes().add(n);
+	//	System.out.println("here");
 		noterepo.save(n);
-//		Labels label=body.getLabels();
-//		Notes notes=body.getNotes();
-//		notes.getLabels().add(label);
-//		label.getNotes().add(notes);
-//		labelrepo.save(label);
-//		noterepo.save(notes);
 		Response response=new Response();
 		response.setStatusCode(166);
 		response.setStatusMessage("Label Added To Note");
@@ -82,6 +87,7 @@ public class LabelsController {
 		Labels l=labelrepo.findById(labelid).get();
 		Notes n=noterepo.findById(noteid).get();
 		n.getLabels().remove(l);
+		l.getNotes().remove(n);
 		noterepo.save(n);
 		Response response=new Response();
 		response.setStatusCode(166);
@@ -110,21 +116,33 @@ public class LabelsController {
 		long userid=0;
 		try {
 			userid=TokenVerify.tokenVerifing(token);
-		}
+			//labelrepo.delete(labelname);
+			
+		noterepo.findAllById(userid).get().stream().map(x -> x.getLabels().stream().filter(temp ->check(temp,labelname.getLabelName())));
+			}
 		catch(Exception e)
 		{
 			throw new NoteException(123,e.getMessage()); 
-		}
-		
-		List<Notes> allnotes=noterepo.findAllById(userid).get();
-		for(int i=0;i<allnotes.size();i++)
-		{
 		}
 			
 		Response response=new Response();
 		response.setStatusCode(166);
 		response.setStatusMessage("Note Deleted");
 		return new ResponseEntity<Response>(response,HttpStatus.OK);
+	}
+	
+	private boolean check(Labels lb,String removelabel)
+	{
+		if(lb.getLabelName().equals(removelabel))
+		{
+			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		
 	}
 	
 	
