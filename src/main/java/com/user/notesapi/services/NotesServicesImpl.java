@@ -17,13 +17,13 @@ import com.user.notesapi.util.TokenVerify;
 public class NotesServicesImpl implements NotesServices {
 	
 	@Autowired
-	ModelMapper modelMapper;
+	private ModelMapper modelMapper;
 	
 	@Autowired
-	NotesRepository notesRepository;
+	private NotesRepository notesRepository;
 	
 	@Autowired
-	LabelsRepository labelRepository;
+	private LabelsRepository labelRepository;
 	public void createNote(String token,NotesDTO notesDTO)throws NoteException
 	{
 		long id=TokenVerify.tokenVerifing(token);
@@ -39,6 +39,8 @@ public class NotesServicesImpl implements NotesServices {
 	{
 		TokenVerify.tokenVerifing(token);
 		notes.setLastModifiedStamp(LocalDate.now());
+		System.out.println(notes.isArchive());
+		
 		notesRepository.save(notes);
 	}
 	

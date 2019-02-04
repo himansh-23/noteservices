@@ -2,9 +2,7 @@ package com.user.notesapi.exception;
 
 public class NoteException extends Exception{
 	
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	int errorCode;
 	String errorMsg;
