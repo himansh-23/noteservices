@@ -13,6 +13,7 @@ import com.user.notesapi.repository.LabelsRepository;
 import com.user.notesapi.repository.NotesRepository;
 import com.user.notesapi.util.TokenVerify;
 
+
 @Service
 public class NotesServicesImpl implements NotesServices {
 	
@@ -44,19 +45,32 @@ public class NotesServicesImpl implements NotesServices {
 		notesRepository.save(notes);
 	}
 	
-	public void deleteNote(String token,Notes notes)throws NoteException
+	public void deleteNote(String token,long notes) throws NoteException
 	{
 		TokenVerify.tokenVerifing(token);
 	//	labelRepository
-		notes.getLabels().clear();
-		labelRepository.findAll().forEach(x ->this.removeNote(notes,x));
-		notesRepository.delete(notes);
+		Notes idnote=notesRepository.findById(notes).get();
+		idnote.getLabels().clear();
+		labelRepository.findAll().forEach(x ->this.removeNote(idnote,x));
+		notesRepository.delete(idnote);
 	}
 	
-	public List<Notes> listAllNotes(String token)throws NoteException //,String value
+	public List<Notes> listAllNotes(String token,String archive,String trash)throws NoteException //,String value
 	{
+		boolean archive1;
+				boolean trash1;
+		if(archive.equals("true"))
+			archive1=true;
+		else
+			archive1=false;
+		
+		if(trash.equals("true"))
+			trash1=true;
+		else
+			trash1=false;
+		
 		long id=TokenVerify.tokenVerifing(token);
-		return notesRepository.findAllById(id).orElseThrow(() -> new NoteException(101,"No Note Found"));
+		return notesRepository.findAllById(id,archive1,trash1).orElseThrow(() -> new NoteException(101,"No Note Found"));
 	}
 	
 	private void removeNote(Notes notes,Labels l)
@@ -64,6 +78,24 @@ public class NotesServicesImpl implements NotesServices {
 		l.getNotes().remove(notes);
 		notesRepository.save(notes);
 	}
+	
+//	public void trashNote(String token,long notes) throws NoteException
+//	{
+//		TokenVerify.tokenVerifing(token);
+//		Notes idnote=notesRepository.findById(notes).get();
+//		idnote.setTrash(true);
+//		notesRepository.save(idnote);
+//
+//	}
+//	
+//	public void restoreTrash(String token,long notes) throws NoteException
+//	{
+//		TokenVerify.tokenVerifing(token);
+//		Notes idnote=notesRepository.findById(notes).get();
+//		idnote.setTrash(false);
+//		notesRepository.save(idnote);
+//
+//	}
 	
 	/*public List<Notes> listAllPinnedNotes(String token)throws NoteException
 	{

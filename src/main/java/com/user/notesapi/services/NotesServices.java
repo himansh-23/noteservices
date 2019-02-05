@@ -9,8 +9,8 @@ public interface NotesServices {
 
 	public void createNote(String token,NotesDTO notesDTO) throws NoteException;
 	public void updateNote(String token,Notes notes)throws NoteException;
-	public void deleteNote(String token,Notes notes)throws NoteException;
-	public List<Notes> listAllNotes(String token)throws NoteException;//,String value
+	public void deleteNote(String token,long id)throws NoteException;
+	public List<Notes> listAllNotes(String token,String archive,String trash)throws NoteException;//,String value
 	/*
 	 * public List<Notes> listAllPinnedNotes(String token)throws NoteException;
 	 * public List<Notes> listAllArchiveNotes(String token)throws NoteException;
