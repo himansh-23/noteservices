@@ -10,7 +10,8 @@ public interface LabelService {
 	
 	public void createLabel(String token,Labels labelName) throws NoteException;
 	public void updateLabel(String token,Labels labelName) throws NoteException;
-	public void deleteLabel(String token,String labelName) throws NoteException;
+	public void deleteLabel(String token,String labelId) throws NoteException;
+	public void labelDeleteToNote(String token,String noteid,String labelid) throws NoteException;
 	public List<Labels> listLabels(String token) throws NoteException;
 
 }

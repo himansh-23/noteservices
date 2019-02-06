@@ -7,18 +7,9 @@ import com.user.notesapi.exception.NoteException;
 
 public interface NotesServices {
 
-	public void createNote(String token,NotesDTO notesDTO) throws NoteException;
-	public void updateNote(String token,Notes notes)throws NoteException;
-	public void deleteNote(String token,long id)throws NoteException;
-	public List<Notes> listAllNotes(String token,String archive,String trash)throws NoteException;//,String value
-	/*
-	 * public List<Notes> listAllPinnedNotes(String token)throws NoteException;
-	 * public List<Notes> listAllArchiveNotes(String token)throws NoteException;
-	 * public List<Notes> listAllTrashNotes(String token)throws NoteException;
-	 */
-	
-	/*
-	 * findAllPinnedNote(long userid); findAllArchiveNote findAllTrashNote(long
-	 * userid);
-	 */
+	 void createNote(String token,NotesDTO notesDTO) throws NoteException;
+	 void updateNote(String token,Notes notes)throws NoteException;
+	 void deleteNote(String token,long id)throws NoteException;
+	 List<Notes> listAllNotes(String token,String archive,String trash)throws NoteException;
 }
+

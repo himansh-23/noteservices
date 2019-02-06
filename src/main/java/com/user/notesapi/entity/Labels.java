@@ -27,6 +27,11 @@ public class Labels implements Serializable {
 //	@Autowired
 //	LabelsRepository labelrepo;
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;

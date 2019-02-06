@@ -102,8 +102,7 @@ public class NotesController {
 	@GetMapping
 	public ResponseEntity<List<Notes>> listAllNotes(@RequestHeader("token")String token,@RequestParam String archive,@RequestParam String trash)throws NoteException //@PathVariable("value") String value,
 	{
-		System.out.println(archive);
-		System.out.println(trash);
+		
 		List<Notes> list = noteServices.listAllNotes(token,archive,trash);
 		return new ResponseEntity<List<Notes>>(list,HttpStatus.OK);
 	} 

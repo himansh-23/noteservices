@@ -71,7 +71,8 @@ public class LabelsController {
 	@PutMapping()
 	public ResponseEntity <Response> updateLabel(@RequestBody Labels label,@RequestHeader String token) throws NoteException
 	{
-		labelService.updateLabel(token, label);
+		//System.out.println(label);
+			labelService.updateLabel(token, label);
 		 	Response response=new Response();
 			response.setStatusCode(166);
 			response.setStatusMessage("Label Updated");
@@ -108,25 +109,29 @@ public class LabelsController {
 	
 	/**
 	 * 
+	 * @param token
 	 * @param noteid
 	 * @param labelid
-	 * @return response of a deleted note with particular label
+	 * @return Success message if note is Deleted
+	 * @throws NoteException
 	 */
 	@DeleteMapping("/deletenotetolabel")
-	public ResponseEntity<Response> labelDeleteToNote(@RequestParam String noteid,@RequestParam String labelid)
+	public ResponseEntity<Response> labelDeleteToNote(@RequestHeader String token,@RequestParam String noteid,@RequestParam String labelid) throws NoteException
 	{
 		System.out.println(noteid+"  "+labelid);
 		
-		long noteidd=Long.parseLong(labelid);
-		long labelidd=Long.parseLong(noteid);
+	//	long noteidd=Long.parseLong(labelid);
+	//	long labelidd=Long.parseLong(noteid);
+
+		labelService.labelDeleteToNote(token, labelid, noteid);
 		
-		Labels singleLabel=labelrepo.findById(labelidd).get();
-		Notes singleNote=noterepo.findById(noteidd).get();
-		
-		singleNote.getLabels().remove(singleLabel);
-		singleLabel.getNotes().remove(singleNote);
-		labelrepo.save(singleLabel);
-		noterepo.save(singleNote);
+//		Labels singleLabel=labelrepo.findById(labelidd).get();
+//		Notes singleNote=noterepo.findById(noteidd).get();
+//		
+//		singleNote.getLabels().remove(singleLabel);
+//		singleLabel.getNotes().remove(singleNote);
+//		labelrepo.save(singleLabel);
+//		noterepo.save(singleNote);
 
 		Response response=new Response();
 		response.setStatusCode(166);
@@ -155,34 +160,22 @@ public class LabelsController {
 			List<Labels> list=labelService.listLabels(token);
 		return new ResponseEntity<List<Labels>>(list,HttpStatus.OK);
 	}
-	
-	/*
-	 * public ResponseEntity<Response> deleteLabel(@RequestBody Labels
-	 * labelname,@RequestHeader String token) throws NoteException { long userid=0;
-	 * try { userid=TokenVerify.tokenVerifing(token); //labelrepo.delete(labelname);
+	/**
 	 * 
-	 * noterepo.findAllById(userid).get().stream().map(x ->
-	 * x.getLabels().stream().filter(temp ->check(temp,labelname.getLabelName())));
-	 * } catch(Exception e) { throw new NoteException(123,e.getMessage()); }
-	 * 
-	 * Response response=new Response(); response.setStatusCode(166);
-	 * response.setStatusMessage("Note Deleted"); return new
-	 * ResponseEntity<Response>(response,HttpStatus.OK); }
+	 * @param labelid
+	 * @return 
+	 * @throws NoteException
 	 */
-	private boolean check(Labels lb,String removelabel)
+	@DeleteMapping
+	public ResponseEntity<Response> deleteLabel(@RequestHeader String token,@RequestParam String labelId) throws NoteException
 	{
-		if(lb.getLabelName().equals(removelabel))
-		{
-			
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		
+			labelService.deleteLabel(token, labelId);
+			Response response = new Response();
+			response.setStatusCode(166);
+			response.setStatusMessage("Label Deleted Successfully");
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
-	
-	
+	  
+
 
 }
