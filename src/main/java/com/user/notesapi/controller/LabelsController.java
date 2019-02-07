@@ -169,6 +169,7 @@ public class LabelsController {
 	@DeleteMapping
 	public ResponseEntity<Response> deleteLabel(@RequestHeader String token,@RequestParam String labelId) throws NoteException
 	{
+		System.out.println("api hit");
 			labelService.deleteLabel(token, labelId);
 			Response response = new Response();
 			response.setStatusCode(166);

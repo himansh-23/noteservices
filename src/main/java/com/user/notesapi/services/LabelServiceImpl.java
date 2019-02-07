@@ -1,17 +1,18 @@
 package com.user.notesapi.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.user.notesapi.appconfig.Receiver;
 import com.user.notesapi.entity.Labels;
 import com.user.notesapi.entity.Notes;
 import com.user.notesapi.exception.NoteException;
 import com.user.notesapi.repository.LabelsRepository;
 import com.user.notesapi.repository.NotesRepository;
 import com.user.notesapi.util.TokenVerify;
-
 @Service
 public class LabelServiceImpl implements LabelService {
 
@@ -21,11 +22,19 @@ public class LabelServiceImpl implements LabelService {
 	@Autowired
 	NotesRepository noterepo;
 	
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+	
+	@Autowired
+    private Receiver receiver;
+	
 	@Override
 	public void createLabel(String token,Labels label) throws NoteException{
 		long userid=TokenVerify.tokenVerifing(token);
 		label.setUserid(userid);
+	//	 this.rabbitTemplate.convertAndSend("directExchange", "first","Welcome"); 
 		labelrepo.save(label);
+		
 	}
 	@Override
 	public void updateLabel(String token,Labels label) throws NoteException{
@@ -49,9 +58,10 @@ public class LabelServiceImpl implements LabelService {
 	public List<Labels> listLabels(String token) throws NoteException {
 		// TODO Auto-generated method stub
 		 long userid=TokenVerify.tokenVerifing(token);
-		 List<Labels> list = labelrepo.findAllById(userid).get();
+		 List<Labels> list = labelrepo.findAllById(userid).orElse(new ArrayList<Labels>());
 		return list;
 	}
+	
 	@Override
 	public void labelDeleteToNote(String token,String noteid, String labelid) throws NoteException {
 		

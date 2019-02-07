@@ -36,6 +36,7 @@ public class NotesServicesImpl implements NotesServices {
 		notesRepository.save(note);
 	}
 	
+	@Override
 	public void updateNote(String token,Notes notes)throws NoteException
 	{
 		TokenVerify.tokenVerifing(token);
@@ -45,6 +46,7 @@ public class NotesServicesImpl implements NotesServices {
 		notesRepository.save(notes);
 	}
 	
+	@Override
 	public void deleteNote(String token,long notes) throws NoteException
 	{
 		TokenVerify.tokenVerifing(token);
@@ -55,6 +57,7 @@ public class NotesServicesImpl implements NotesServices {
 		notesRepository.delete(idnote);
 	}
 	
+	@Override
 	public List<Notes> listAllNotes(String token,String archive,String trash)throws NoteException //,String value
 	{	
 		long id=TokenVerify.tokenVerifing(token);
@@ -67,5 +70,5 @@ public class NotesServicesImpl implements NotesServices {
 		l.getNotes().remove(notes);
 		notesRepository.save(notes);
 	}
-
+// eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJRCI6MzV9.l7OjtnAX5rSlX06Cu-SN_xGwRH8sKrPrmtfWT_JAkJI
 }
