@@ -1,6 +1,8 @@
 package com.user.notesapi.controller;
 
 import java.util.List;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,7 @@ import com.user.notesapi.repository.LabelsRepository;
 import com.user.notesapi.repository.NotesRepository;
 import com.user.notesapi.response.Response;
 import com.user.notesapi.services.LabelService;
-
+import com.user.notesapi.appconfig.*;
 /**
  * 
  * @author administrator
@@ -42,6 +44,8 @@ public class LabelsController {
 	@Autowired
 	LabelService labelService;
 	
+	@Autowired
+    private RabbitTemplate rabbitTemplate;
 	/**
 	 * 
 	 * @param label
@@ -57,7 +61,7 @@ public class LabelsController {
 		Response response=new Response();
 		response.setStatusCode(166);
 		response.setStatusMessage("Label Created");
-		
+		rabbitTemplate.convertAndSend(ApplicationConfiguration.queueName,"th is mesdfsd");
 		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 	

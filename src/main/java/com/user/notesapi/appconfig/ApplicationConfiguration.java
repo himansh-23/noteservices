@@ -17,7 +17,7 @@ public class ApplicationConfiguration {
 	
 	static final String topicExchangeName = "spring-boot-exchange";
 
-    static final String queueName = "Notes-for-elastic";
+   public static final String queueName = "Notes-for-elastic";
 	
 	
 	@Bean
