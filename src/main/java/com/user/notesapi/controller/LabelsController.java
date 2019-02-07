@@ -60,6 +60,7 @@ public class LabelsController {
 		labelService.createLabel(token, label);
 		Response response=new Response();
 		response.setStatusCode(166);
+		
 		response.setStatusMessage("Label Created");
 		rabbitTemplate.convertAndSend(ApplicationConfiguration.queueName,"th is mesdfsd");
 		return new ResponseEntity<Response>(response,HttpStatus.OK);
