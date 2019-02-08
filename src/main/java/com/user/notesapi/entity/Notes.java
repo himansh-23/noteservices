@@ -11,6 +11,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
+
+//import org.springframework.data.elasticsearch.annotations.Document;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,6 +22,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
+//@Document(indexName = "notesindex", type = "notes")
 public class Notes implements Serializable {
 
 	private static final long serialVersionUID = 1L;

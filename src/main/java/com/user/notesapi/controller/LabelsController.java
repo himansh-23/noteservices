@@ -1,7 +1,6 @@
 package com.user.notesapi.controller;
 
 import java.util.List;
-
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,7 +49,7 @@ public class LabelsController {
 	 * 
 	 * @param label
 	 * @param token
-	 * @return crete a Note in Data-Base With PArticular Name 
+	 * @return create a Note in Data-Base With Particular Name 
 	 * @throws NoteException
 	 */
 	@PostMapping()

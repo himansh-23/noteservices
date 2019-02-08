@@ -4,7 +4,6 @@ import java.util.List;
 import com.user.notesapi.dto.NotesDTO;
 import com.user.notesapi.entity.Notes;
 import com.user.notesapi.exception.NoteException;
-
 public interface NotesServices {
 
 	 void createNote(String token,NotesDTO notesDTO) throws NoteException;

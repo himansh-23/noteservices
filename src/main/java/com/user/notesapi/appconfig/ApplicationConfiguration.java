@@ -15,10 +15,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationConfiguration {
 	
-	static final String topicExchangeName = "spring-boot-exchange";
+	private static final String topicExchangeName = "spring-boot-exchange";
 
    public static final String queueName = "Notes-for-elastic";
-	
+   
+   
 	
 	@Bean
 	public ModelMapper getmodelmapper()
@@ -53,8 +54,11 @@ public class ApplicationConfiguration {
 
 	 @Bean
 	 public MessageListenerAdapter listenerAdapter(Receiver receiver) {
+		// System.out.println("zzzz");
 	        return new MessageListenerAdapter(receiver, "receiveMessage");
 	 }
+	 
+	 
 	 
 	
 	

@@ -32,8 +32,8 @@ public class LabelServiceImpl implements LabelService {
 	public void createLabel(String token,Labels label) throws NoteException{
 		long userid=TokenVerify.tokenVerifing(token);
 		label.setUserid(userid);
-	//	 this.rabbitTemplate.convertAndSend("directExchange", "first","Welcome"); 
-		labelrepo.save(label);
+		 this.rabbitTemplate.convertAndSend("directExchange", "first","Welcome"); 
+	//	labelrepo.save(label);
 		
 	}
 	@Override

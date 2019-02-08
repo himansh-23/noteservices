@@ -4,8 +4,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.user.notesapi.appconfig.ApplicationConfiguration;
 import com.user.notesapi.dto.NotesDTO;
 import com.user.notesapi.entity.Labels;
 import com.user.notesapi.entity.Notes;
@@ -25,15 +30,31 @@ public class NotesServicesImpl implements NotesServices {
 	
 	@Autowired
 	private LabelsRepository labelRepository;
+	
+	@Autowired
+	private ObjectMapper obj;
+	 
+	 @Autowired
+	 private RabbitTemplate rabbitTemplate;
+	
+	
 	public void createNote(String token,NotesDTO notesDTO)throws NoteException
 	{
 		long id=TokenVerify.tokenVerifing(token);
-	//	System.out.println(id);
 		notesDTO.setUserid(id);
 		Notes note = modelMapper.map(notesDTO, Notes.class);
 		note.setCreateStamp(LocalDate.now());
 		note.setLastModifiedStamp(LocalDate.now());
-		notesRepository.save(note);
+		try 
+		{
+			rabbitTemplate.convertAndSend(ApplicationConfiguration.queueName, obj.writeValueAsString(note));
+			System.out.println(obj.writeValueAsString(note));
+			
+		}
+		catch(JsonProcessingException e)
+		{
+			throw new NoteException(122,e.getMessage());
+		}
 	}
 	
 	@Override

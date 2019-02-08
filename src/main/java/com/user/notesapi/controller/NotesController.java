@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.user.notesapi.dto.NotesDTO;
 import com.user.notesapi.entity.Notes;
 import com.user.notesapi.exception.NoteException;
 import com.user.notesapi.response.Response;
 import com.user.notesapi.services.NotesServices;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -33,9 +36,10 @@ import com.user.notesapi.services.NotesServices;
 @CrossOrigin(origins= {"http://localhost:4200"},exposedHeaders= {"token"})
 public class NotesController {
 
-	@Autowired
-	NotesServices noteServices;
-
+	 @Autowired
+	 NotesServices noteServices;
+	  
+	 static Logger logger=LoggerFactory.getLogger(NotesController.class);
 	/**
 	 * 
 	 * @param notesDTO
@@ -44,13 +48,16 @@ public class NotesController {
 	 * @throws NoteException
 	 */
 	@PostMapping
-	public ResponseEntity<Response> createNote(@RequestBody NotesDTO notesDTO,@RequestHeader("token")String token)throws NoteException
+	public ResponseEntity<Response> createNote(@RequestBody NotesDTO notesDTO,@RequestHeader("token")String token)throws NoteException,Exception
 	{
-		//String token1=request.getHeader("token");
-	//	System.out.println(token);
-		//String token="";
+		//RabbitMq Server Send
+		
+		logger.info("Rabbit Template Send");
+		
 		noteServices.createNote(token, notesDTO);
+		logger.info("Data Send To DataBase");
 		Response response=new Response();
+		
 		response.setStatusCode(166);
 		response.setStatusMessage("Note Created Successfully");
 		return new ResponseEntity<Response>(response,HttpStatus.OK);
