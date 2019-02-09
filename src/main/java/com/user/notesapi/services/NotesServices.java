@@ -10,5 +10,6 @@ public interface NotesServices {
 	 void updateNote(String token,Notes notes)throws NoteException;
 	 void deleteNote(String token,long id)throws NoteException;
 	 List<Notes> listAllNotes(String token,String archive,String trash)throws NoteException;
+	void matchedNotes(String token, String searchContent) throws NoteException;
 }
 

@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
+
 //import org.springframework.data.elasticsearch.annotations.Document;
 
 import lombok.Getter;

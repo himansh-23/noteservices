@@ -1,5 +1,8 @@
 package com.user.notesapi.appconfig;
 
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -8,6 +11,8 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration.RestHighLevelClientConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,7 +24,7 @@ public class ApplicationConfiguration {
 
    public static final String queueName = "Notes-for-elastic";
    
-   
+ 
 	
 	@Bean
 	public ModelMapper getmodelmapper()
@@ -57,6 +62,13 @@ public class ApplicationConfiguration {
 		// System.out.println("zzzz");
 	        return new MessageListenerAdapter(receiver, "receiveMessage");
 	 }
+	 
+	 @Bean
+	 public RestHighLevelClient getClient()
+	 {
+		 return new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
+	 }
+	 
 	 
 	 
 	 

@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,6 +19,7 @@ import com.user.notesapi.entity.Notes;
 import com.user.notesapi.exception.NoteException;
 import com.user.notesapi.repository.LabelsRepository;
 import com.user.notesapi.repository.NotesRepository;
+import com.user.notesapi.search.ElasticService;
 import com.user.notesapi.util.TokenVerify;
 
 @Service
@@ -36,7 +39,9 @@ public class NotesServicesImpl implements NotesServices {
 	 
 	 @Autowired
 	 private RabbitTemplate rabbitTemplate;
-	
+	 
+	 @Autowired
+	 private ElasticService service;
 	
 	public void createNote(String token,NotesDTO notesDTO)throws NoteException
 	{
@@ -45,16 +50,9 @@ public class NotesServicesImpl implements NotesServices {
 		Notes note = modelMapper.map(notesDTO, Notes.class);
 		note.setCreateStamp(LocalDate.now());
 		note.setLastModifiedStamp(LocalDate.now());
-		try 
-		{
-			rabbitTemplate.convertAndSend(ApplicationConfiguration.queueName, obj.writeValueAsString(note));
-			System.out.println(obj.writeValueAsString(note));
-			
-		}
-		catch(JsonProcessingException e)
-		{
-			throw new NoteException(122,e.getMessage());
-		}
+		note=notesRepository.save(note);
+			rabbitTemplate.convertAndSend(ApplicationConfiguration.queueName, note);
+			//System.out.println(obj.writeValueAsString(note));
 	}
 	
 	@Override
@@ -92,4 +90,13 @@ public class NotesServicesImpl implements NotesServices {
 		notesRepository.save(notes);
 	}
 // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJRCI6MzV9.l7OjtnAX5rSlX06Cu-SN_xGwRH8sKrPrmtfWT_JAkJI
+
+	@Override
+	public void matchedNotes(String token, String searchContent) throws NoteException
+	{
+			TokenVerify.tokenVerifing(token);
+			service.search(searchContent);
+			
+		
+	}
 }

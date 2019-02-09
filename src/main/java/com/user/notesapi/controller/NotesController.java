@@ -1,6 +1,7 @@
 
 package com.user.notesapi.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 
  * @author Himanshu
- * @Purpose For CRUD Operation of Note 
+ * @Purpose For CRUD Operation of Note And Searching Of Notes Through Elastic Search
  *
  */
 @RestController
@@ -113,5 +114,15 @@ public class NotesController {
 		List<Notes> list = noteServices.listAllNotes(token,archive,trash);
 		return new ResponseEntity<List<Notes>>(list,HttpStatus.OK);
 	} 
+	
+	
+	@GetMapping("/search")
+	public ResponseEntity<List<Notes>> searchNotes(@RequestHeader("token")String token,@RequestParam String searchContent) throws NoteException
+	{
+		System.out.println("coming");
+		noteServices.matchedNotes(token,searchContent);
+		System.out.println("Exit");
+		return new ResponseEntity(new ArrayList<Notes>(),HttpStatus.OK);
+	}
 	
 }
