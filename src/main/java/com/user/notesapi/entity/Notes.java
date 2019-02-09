@@ -22,7 +22,6 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-//@Document(indexName = "notesindex", type = "notes")
 public class Notes implements Serializable {
 
 	private static final long serialVersionUID = 1L;

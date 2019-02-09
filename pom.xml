@@ -81,19 +81,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-high-level-client</artifactId>
+			<artifactId>transport</artifactId>
 		</dependency>
+	
 		
 		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-client</artifactId>
-			<version>6.1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-client-sniffer</artifactId>
-			<version>6.1.2</version>
-		</dependency>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-elasticsearch</artifactId>
+</dependency>
+
 
 	</dependencies>
 

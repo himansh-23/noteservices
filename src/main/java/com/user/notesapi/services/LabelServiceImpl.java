@@ -21,19 +21,13 @@ public class LabelServiceImpl implements LabelService {
 	
 	@Autowired
 	NotesRepository noterepo;
-	
-	@Autowired
-	private RabbitTemplate rabbitTemplate;
-	
-	@Autowired
-    private Receiver receiver;
+
 	
 	@Override
 	public void createLabel(String token,Labels label) throws NoteException{
 		long userid=TokenVerify.tokenVerifing(token);
 		label.setUserid(userid);
-		 this.rabbitTemplate.convertAndSend("directExchange", "first","Welcome"); 
-	//	labelrepo.save(label);
+		labelrepo.save(label);
 		
 	}
 	@Override
