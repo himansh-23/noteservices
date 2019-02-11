@@ -1,7 +1,6 @@
 
 package com.user.notesapi.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -116,13 +116,16 @@ public class NotesController {
 	} 
 	
 	
-	@GetMapping("/search")
-	public ResponseEntity<List<Notes>> searchNotes(@RequestHeader("token")String token,@RequestParam String searchContent) throws NoteException
+	@GetMapping("/search/{text}")
+	public ResponseEntity<List<Notes>> searchNotes(@RequestHeader("token")String token,
+	       @PathVariable String text,@RequestParam String isArchive,@RequestParam String isTrash) throws NoteException
 	{
-		System.out.println("coming");
-		noteServices.matchedNotes(token,searchContent);
-		System.out.println("Exit");
-		return new ResponseEntity(new ArrayList<Notes>(),HttpStatus.OK);
+		List<Notes> list=noteServices.matchedNotes(token,text,Boolean.valueOf(isArchive),Boolean.valueOf(isTrash));
+		for(Notes notes:list)
+			{
+				System.out.println(notes);
+			}
+		return new ResponseEntity<List<Notes>>(list,HttpStatus.OK);
 	}
 	
 }

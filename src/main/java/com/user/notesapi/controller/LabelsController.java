@@ -52,7 +52,7 @@ public class LabelsController {
 	 * @return create a Note in Data-Base With Particular Name 
 	 * @throws NoteException
 	 */
-	@PostMapping()
+	@PostMapping
 	public ResponseEntity<Response> createLabel(@RequestBody Labels label,@RequestHeader String token) throws NoteException
 	{
 		

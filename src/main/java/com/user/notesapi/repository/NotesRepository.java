@@ -9,7 +9,7 @@ import com.user.notesapi.entity.Notes;
 
 public interface NotesRepository extends CrudRepository<Notes, Long> {
 
-	@Query(value="select * from notes where userid= :userid AND archive=:archive AND trash =:trash",nativeQuery=true) // :str = true
+	@Query(value="select * from notes where userid= :userid AND is_archive=:archive AND is_trash =:trash",nativeQuery=true) // :str = true
 	Optional<List<Notes>> findAllById(@Param("userid")long userid,@Param("archive") boolean archive,@Param("trash") boolean trash); //@Param("str") String str
 	
 }

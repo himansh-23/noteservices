@@ -37,10 +37,10 @@ public class NotesDTO implements Serializable{
 	private String image;
 	
 	//@Column(columnDefinition="tinyint(1) default 0 not null")
-	private boolean archive;
+	private boolean isArchive;
 	
 	//@Column(columnDefinition="tinyint(1) default 0 not null")
-	private boolean trash;
+	private boolean isTrash;
 	
 	private LocalDateTime remainder;
 

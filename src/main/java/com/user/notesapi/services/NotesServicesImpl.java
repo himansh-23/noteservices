@@ -1,8 +1,12 @@
 package com.user.notesapi.services;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
@@ -92,11 +96,18 @@ public class NotesServicesImpl implements NotesServices {
 // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJRCI6MzV9.l7OjtnAX5rSlX06Cu-SN_xGwRH8sKrPrmtfWT_JAkJI
 
 	@Override
-	public void matchedNotes(String token, String searchContent) throws NoteException
+	public List<Notes> matchedNotes(String token, String searchContent,boolean isArchive,boolean isTrash) throws NoteException
 	{
-			TokenVerify.tokenVerifing(token);
-			service.search(searchContent);
+			long userid=TokenVerify.tokenVerifing(token);
+			Map<String,Float> fields=new HashMap<String, Float>();
+			fields.put("title", 3.0f);
+			fields.put("content", 2.0f);
 			
-		
+			Map<String,Object> restriction=new HashMap<String, Object>();
+			restriction.put("archive", isArchive);
+			restriction.put("trash",isTrash);
+			restriction.put("userid",userid);
+			List<Notes> list=service.multipleFieldQuery(fields, searchContent, restriction, "notesdata", "notes");
+			return list;
 	}
 }
