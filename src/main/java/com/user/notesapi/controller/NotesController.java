@@ -52,7 +52,6 @@ public class NotesController {
 	public ResponseEntity<Response> createNote(@RequestBody NotesDTO notesDTO,@RequestHeader("token")String token)throws NoteException,Exception
 	{
 		//RabbitMq Server Send
-		
 		logger.info("Rabbit Template Send");
 		
 		noteServices.createNote(token, notesDTO);
@@ -110,22 +109,25 @@ public class NotesController {
 	@GetMapping
 	public ResponseEntity<List<Notes>> listAllNotes(@RequestHeader("token")String token,@RequestParam String archive,@RequestParam String trash)throws NoteException //@PathVariable("value") String value,
 	{
-		
 		List<Notes> list = noteServices.listAllNotes(token,archive,trash);
 		return new ResponseEntity<List<Notes>>(list,HttpStatus.OK);
 	} 
-	
-	
+	/**
+	 * @Purpose For Searching Notes With Give Words
+	 * @param token
+	 * @param text
+	 * @param isArchive
+	 * @param isTrash
+	 * @return List<Notes>
+	 * @throws NoteException
+	 */
 	@GetMapping("/search/{text}")
 	public ResponseEntity<List<Notes>> searchNotes(@RequestHeader("token")String token,
 	       @PathVariable String text,@RequestParam String isArchive,@RequestParam String isTrash) throws NoteException
 	{
 		List<Notes> list=noteServices.matchedNotes(token,text,Boolean.valueOf(isArchive),Boolean.valueOf(isTrash));
-		for(Notes notes:list)
-			{
-				System.out.println(notes);
-			}
 		return new ResponseEntity<List<Notes>>(list,HttpStatus.OK);
 	}
+	
 	
 }

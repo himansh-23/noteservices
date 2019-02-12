@@ -10,6 +10,8 @@ public interface ElasticService {
 
 	void save(Object message);
 	void search(String searchContent) throws IOException;
+	void update(Notes updateNote);
+	void delete(long id);
 	List<Notes> multipleFieldQuery(Map<String,Float> fields,String text,Map<String,Object> restrictions,String type,String index);
 
 	

@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -53,6 +55,36 @@ public class ElasticSearchImpl implements ElasticService {
 		}
 
 	}
+	
+	@Override
+	public void update(Notes updateNote)
+	{
+		UpdateRequest  updateRequest= new UpdateRequest("notesdata", "notes", updateNote.getId()+"");
+		Map dataMap = objectMapper.convertValue(updateNote, Map.class);
+		updateRequest.doc(dataMap);
+		try {
+		client.update(updateRequest,RequestOptions.DEFAULT);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	
+		
+	}
+	
+	@Override
+	public void delete(long id)
+	{
+		DeleteRequest deleteRequest=new DeleteRequest("notesdata", "notes", id+"");
+		try {
+		client.delete(deleteRequest, RequestOptions.DEFAULT);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void search(String searchContent) {
@@ -73,24 +105,9 @@ public class ElasticSearchImpl implements ElasticService {
 		}
 
 		response.getHits().iterator();
-
-//		 MatchQueryBuilder matchQueryBuilder = QueryBuilders 
-//		 .matchQuery("title","*ss*");
-//		SearchResponse searchResponse=matchQueryBuilder.
-
-		// return null;
-//		try {
-//			GetRequest getRequest = new GetRequest("notesdata", "notes", "278");
-//			GetResponse response = client.get(getRequest);
-//			if (response.isExists()) {
-//				String str = response.getSourceAsString();
-//				System.out.println(str);
-//			}
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		
 	}
+	
+	
 
 	@Override
 	public List<Notes> multipleFieldQuery(Map<String, Float> fields, String text, Map<String, Object> restrictions,
@@ -128,12 +145,12 @@ public class ElasticSearchImpl implements ElasticService {
 
 	private BoolQueryBuilder boolQuery(Map<String, Float> fields, String text, Map<String, Object> restrictions) {
 
-//		if (!text.startsWith("*")) {
-//			text += "*" + text;
-//		}
-//
+		if (!text.startsWith("*")) {
+			text ="*"+text;
+		}
+
 		if (!text.endsWith("*")) {
-			text += "*";
+			text =text+"*";
 		}
 
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();

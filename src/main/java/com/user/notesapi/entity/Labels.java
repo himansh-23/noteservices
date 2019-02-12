@@ -11,25 +11,22 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * @Purpose Label Entity Class
+ * @author administrator
+ * @version 1.2
+ */
 @Entity
 @Getter
 @Setter
 @ToString
 public class Labels implements Serializable {
 
-//	@Autowired
-//	LabelsRepository labelrepo;
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Id

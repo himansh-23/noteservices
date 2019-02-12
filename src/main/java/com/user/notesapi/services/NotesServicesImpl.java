@@ -40,6 +40,9 @@ public class NotesServicesImpl implements NotesServices {
 	
 	@Autowired
 	private ObjectMapper obj;
+	
+	@Autowired
+	private ElasticService elasticService;
 	 
 	 @Autowired
 	 private RabbitTemplate rabbitTemplate;
@@ -65,19 +68,20 @@ public class NotesServicesImpl implements NotesServices {
 		TokenVerify.tokenVerifing(token);
 		notes.setLastModifiedStamp(LocalDate.now());
 		System.out.println(notes.isArchive());
-		
-		notesRepository.save(notes);
+		Notes updateNote=notesRepository.save(notes);
+		elasticService.update(updateNote);
 	}
 	
 	@Override
-	public void deleteNote(String token,long notes) throws NoteException
+	public void deleteNote(String token,long notesId) throws NoteException
 	{
 		TokenVerify.tokenVerifing(token);
 	//	labelRepository
-		Notes idnote=notesRepository.findById(notes).get();
+		Notes idnote=notesRepository.findById(notesId).get();
 		idnote.getLabels().clear();
 		labelRepository.findAll().forEach(x ->this.removeNote(idnote,x));
 		notesRepository.delete(idnote);
+		elasticService.delete(notesId);
 	}
 	
 	@Override
@@ -94,7 +98,7 @@ public class NotesServicesImpl implements NotesServices {
 		notesRepository.save(notes);
 	}
 // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJRCI6MzV9.l7OjtnAX5rSlX06Cu-SN_xGwRH8sKrPrmtfWT_JAkJI
-
+	
 	@Override
 	public List<Notes> matchedNotes(String token, String searchContent,boolean isArchive,boolean isTrash) throws NoteException
 	{
