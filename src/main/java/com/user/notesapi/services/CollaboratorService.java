@@ -1,9 +1,13 @@
 package com.user.notesapi.services;
 
+import java.util.List;
+
+import com.user.notesapi.entity.Notes;
 import com.user.notesapi.exception.NoteException;
 
 public interface CollaboratorService {
 
-	void addPersonToNote(String token,Long noteId,Long sharedNote) throws NoteException;
-	
+	Long addPersonToNote(String token,Long noteId,Long sharedNote) throws NoteException;
+	List<Notes> getCollabNotes(String token) throws NoteException;
+	void deleteCollabNote(String token,long noteId) throws NoteException;
 }

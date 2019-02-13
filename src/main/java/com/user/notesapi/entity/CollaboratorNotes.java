@@ -8,13 +8,13 @@ import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Entity
 @Setter
 @Getter
-@AllArgsConstructor
 @ToString
 public class CollaboratorNotes {
 
@@ -24,7 +24,19 @@ public class CollaboratorNotes {
 	
 	@NotNull
 	private long noteId;
-
+	
+	@NotNull
 	private long userId;
+	
+	public CollaboratorNotes()
+	{
+		
+	}
+	
+	public CollaboratorNotes(long noteId,long userId)
+	{
+		this.noteId=noteId;
+		this.userId=userId;
+	}
 	
 }
