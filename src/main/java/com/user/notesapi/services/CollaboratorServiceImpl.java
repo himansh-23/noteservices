@@ -1,5 +1,6 @@
 package com.user.notesapi.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +25,8 @@ public class CollaboratorServiceImpl implements CollaboratorService {
 	@Override
 	public Long addPersonToNote(String token, Long noteId, Long userId)  throws NoteException
 	{
-		TokenVerify.tokenVerifing(token);
-		long id=-1;
+	//	TokenVerify.tokenVerifing(token);
+//		long id=-1;
 		Optional<Long> value=collabRepository.findBy(noteId, userId);
 		if(value.isPresent())
 		{
@@ -55,9 +56,17 @@ public class CollaboratorServiceImpl implements CollaboratorService {
 	@Override
 	public List<Notes> getCollabNotes(String token) throws NoteException {
 		long userId=TokenVerify.tokenVerifing(token);
-		List<Long> noteIds=collabRepository.findAllById(31).get();
-		return notesRepository.findAllCollabNotes(noteIds).get();
 		
+		//List<Long> noteIds=collabRepository.findAllById(userId).get();
+		Optional<List<Long>> noteIds=collabRepository.findAllById(userId);
+		if(noteIds.isPresent())
+		{
+			return notesRepository.findAllCollabNotes(noteIds.get()).get();
+		}
+		else
+		{
+			return new ArrayList<Notes>();
+		}
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -37,6 +38,9 @@ public class NotesServicesImpl implements NotesServices {
 	
 	@Autowired
 	private LabelsRepository labelRepository;
+	
+	@Autowired
+	private CollaboratorService collabservice;
 	
 	@Autowired
 	private ObjectMapper obj;
@@ -88,9 +92,25 @@ public class NotesServicesImpl implements NotesServices {
 	public List<Notes> listAllNotes(String token,String archive,String trash)throws NoteException //,String value
 	{	
 		long id=TokenVerify.tokenVerifing(token);
-		
-		return notesRepository.findAllById(id,Boolean.valueOf(archive),Boolean.valueOf(trash)).orElse( new ArrayList<Notes>());
-	}							// NoteException(101,"No Note Found") orElseThrow(() -> new ArrayList<Notes>()
+		//List<Notes> notes=;
+		//return notesRepository.findAllById(id,Boolean.valueOf(archive),Boolean.valueOf(trash)).orElse( new ArrayList<Notes>());
+		List<Notes> notesList=notesRepository.findAllById(id,Boolean.valueOf(archive),Boolean.valueOf(trash)).orElse( new ArrayList<Notes>());
+		notesList.addAll(collabservice.getCollabNotes(token));
+		return notesList;				//ArrayList<Notes::new
+	}					
+	
+	
+	
+	/*Optional<List<Long>> noteIds=collabRepository.findAllById(userId);
+	if(noteIds.isPresent())
+	{
+		return notesRepository.findAllCollabNotes(noteIds.get()).get();
+	}
+	else
+	{
+		return new ArrayList<Notes>();
+	}*/
+	
 	
 	private void removeNote(Notes notes,Labels l)
 	{
