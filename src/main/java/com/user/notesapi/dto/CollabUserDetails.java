@@ -7,15 +7,15 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class CollabUsers {
+public class CollabUserDetails {
 	
-	long id;
-	String email;
-	String image;
+	private String email;
+	private String image;
 	
-	public CollabUsers(long id)
-	{
-		this.id=id;
+	public CollabUserDetails () {
+		
 	}
+	
+	
 
 }

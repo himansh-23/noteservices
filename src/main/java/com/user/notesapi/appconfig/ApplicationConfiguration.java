@@ -15,7 +15,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration.RestHighLevelClientConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @Configuration
 public class ApplicationConfiguration {
@@ -68,6 +72,16 @@ public class ApplicationConfiguration {
 	 {
 		 return new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
 	 }
+	 
+	 @Bean
+	 public RestTemplate restTemplate() {
+		 
+			RestTemplate restTemplate = new RestTemplate();
+			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+			converter.setObjectMapper(new ObjectMapper());
+			restTemplate.getMessageConverters().add(converter);
+			return restTemplate;
+		}
 	 
 	 
 	 

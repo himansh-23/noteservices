@@ -1,27 +1,29 @@
 package com.user.notesapi.services;
 
-import java.io.IOException;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.user.notesapi.appconfig.ApplicationConfiguration;
+import com.user.notesapi.dto.CollabUserDetails;
 import com.user.notesapi.dto.NotesDTO;
+import com.user.notesapi.dto.SendingNotes;
 import com.user.notesapi.entity.Labels;
 import com.user.notesapi.entity.Notes;
 import com.user.notesapi.exception.NoteException;
+import com.user.notesapi.repository.CollabRepository;
 import com.user.notesapi.repository.LabelsRepository;
 import com.user.notesapi.repository.NotesRepository;
 import com.user.notesapi.search.ElasticService;
@@ -43,7 +45,7 @@ public class NotesServicesImpl implements NotesServices {
 	private CollaboratorService collabservice;
 	
 	@Autowired
-	private ObjectMapper obj;
+	private CollabRepository collabRepo;
 	
 	@Autowired
 	private ElasticService elasticService;
@@ -53,6 +55,11 @@ public class NotesServicesImpl implements NotesServices {
 	 
 	 @Autowired
 	 private ElasticService service;
+	 
+	 @Autowired
+	 private RestTemplate restTemplate;
+	 
+	 final String ROOT_URI = "http://localhost:8080/api/user/collabuserdetails";
 	
 	public void createNote(String token,NotesDTO notesDTO)throws NoteException
 	{
@@ -80,7 +87,6 @@ public class NotesServicesImpl implements NotesServices {
 	public void deleteNote(String token,long notesId) throws NoteException
 	{
 		TokenVerify.tokenVerifing(token);
-	//	labelRepository
 		Notes idnote=notesRepository.findById(notesId).get();
 		idnote.getLabels().clear();
 		labelRepository.findAll().forEach(x ->this.removeNote(idnote,x));
@@ -89,14 +95,28 @@ public class NotesServicesImpl implements NotesServices {
 	}
 	
 	@Override
-	public List<Notes> listAllNotes(String token,String archive,String trash)throws NoteException //,String value
+	public/* List<Notes>*/ List<SendingNotes> listAllNotes(String token,String archive,String trash)throws NoteException //,String value
 	{	
 		long id=TokenVerify.tokenVerifing(token);
 		//List<Notes> notes=;
 		//return notesRepository.findAllById(id,Boolean.valueOf(archive),Boolean.valueOf(trash)).orElse( new ArrayList<Notes>());
 		List<Notes> notesList=notesRepository.findAllById(id,Boolean.valueOf(archive),Boolean.valueOf(trash)).orElse( new ArrayList<Notes>());
 		notesList.addAll(collabservice.getCollabNotes(token));
-		return notesList;				//ArrayList<Notes::new
+		
+		List<SendingNotes> xyz=new ArrayList<SendingNotes>();
+	
+		for(int i=0;i<notesList.size();i++)
+		{
+			List<BigInteger> ll=new ArrayList<BigInteger>();
+			collabRepo.findAllUsersOfNote(notesList.get(i).getId()).get().stream().forEach(x -> ll.add((BigInteger)x));
+			ResponseEntity<CollabUserDetails[]> response = restTemplate.postForEntity(ROOT_URI,ll,CollabUserDetails[].class);
+			SendingNotes zz=new SendingNotes(notesList.get(i),Arrays.asList(response.getBody())); //ll at response.getBody()
+			xyz.add(zz);	
+		}
+			
+			return xyz;
+		
+//		return notesList;				//ArrayList<Notes::new
 	}					
 	
 	

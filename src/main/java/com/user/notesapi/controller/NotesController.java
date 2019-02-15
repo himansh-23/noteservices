@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.user.notesapi.dto.NotesDTO;
+import com.user.notesapi.dto.SendingNotes;
 import com.user.notesapi.entity.Notes;
 import com.user.notesapi.exception.NoteException;
 import com.user.notesapi.response.Response;
@@ -107,10 +109,13 @@ public class NotesController {
 	 * @throws NoteException
 	 */
 	@GetMapping
-	public ResponseEntity<List<Notes>> listAllNotes(@RequestHeader("token")String token,@RequestParam String archive,@RequestParam String trash)throws NoteException //@PathVariable("value") String value,
+	public /*ResponseEntity<List<Notes>> */ ResponseEntity<List<SendingNotes>> /*void*/ listAllNotes(@RequestHeader("token")String token,@RequestParam String archive,@RequestParam String trash)throws NoteException //@PathVariable("value") String value,
 	{
-		List<Notes> list = noteServices.listAllNotes(token,archive,trash);
-		return new ResponseEntity<List<Notes>>(list,HttpStatus.OK);
+		List<SendingNotes> notesall=noteServices.listAllNotes(token, archive, trash);
+		return new ResponseEntity<List<SendingNotes>>(notesall,HttpStatus.OK);
+		
+	//	List<Notes> list = noteServices.listAllNotes(token,archive,trash);
+		//return new ResponseEntity<List<Notes>>(null,HttpStatus.OK);
 	} 
 	/**
 	 * @Purpose For Searching Notes With Give Words
