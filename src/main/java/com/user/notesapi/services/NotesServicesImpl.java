@@ -11,6 +11,8 @@ import java.util.Map;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -30,6 +32,7 @@ import com.user.notesapi.search.ElasticService;
 import com.user.notesapi.util.TokenVerify;
 
 @Service
+@PropertySource("classpath:application.properties")
 public class NotesServicesImpl implements NotesServices {
 	
 	@Autowired
@@ -59,7 +62,8 @@ public class NotesServicesImpl implements NotesServices {
 	 @Autowired
 	 private RestTemplate restTemplate;
 	 
-	 final String ROOT_URI = "http://localhost:8080/api/user/collabuserdetails";
+	 @Value("${spring.ROOT_URI}")
+	 private String ROOT_URI; 
 	
 	public void createNote(String token,NotesDTO notesDTO)throws NoteException
 	{
