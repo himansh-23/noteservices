@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -112,9 +113,18 @@ public class NotesServicesImpl implements NotesServices {
 		for(int i=0;i<notesList.size();i++)
 		{
 			List<BigInteger> ll=new ArrayList<BigInteger>();
-			collabRepo.findAllUsersOfNote(notesList.get(i).getId()).get().stream().forEach(x -> ll.add((BigInteger)x));
-			ResponseEntity<CollabUserDetails[]> response = restTemplate.postForEntity(ROOT_URI,ll,CollabUserDetails[].class);
-			SendingNotes zz=new SendingNotes(notesList.get(i),Arrays.asList(response.getBody())); //ll at response.getBody()
+			Optional<List<Object>> optionalList=collabRepo.findAllUsersOfNote(notesList.get(i).getId());
+			SendingNotes zz=null;
+			if(optionalList.isPresent())
+			{
+				optionalList.get().stream().forEach(x -> ll.add((BigInteger)x));
+				ResponseEntity<CollabUserDetails[]> response = restTemplate.postForEntity(ROOT_URI,ll,CollabUserDetails[].class);
+				zz=new SendingNotes(notesList.get(i),Arrays.asList(response.getBody())); //ll at response.getBody()
+			}
+			else {
+				zz=new SendingNotes(notesList.get(i),new ArrayList<CollabUserDetails>()); 
+				
+			}
 			xyz.add(zz);	
 		}
 			
