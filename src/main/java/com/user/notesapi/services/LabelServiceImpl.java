@@ -60,13 +60,9 @@ public class LabelServiceImpl implements LabelService {
 	public void labelDeleteToNote(String token,String noteid, String labelid) throws NoteException {
 		
 		long labelidd=Long.parseLong(labelid);
-		long noteidd=Long.parseLong(noteid);
-		
-		System.out.println(noteidd);
-		System.out.println(labelidd);
-		
+		long noteidd=Long.parseLong(noteid);		
+
 		Labels singleLabel=labelrepo.findById(labelidd).get();
-	
 		Notes singleNote=noterepo.findById(noteidd).get();
 		
 		singleNote.getLabels().remove(singleLabel);

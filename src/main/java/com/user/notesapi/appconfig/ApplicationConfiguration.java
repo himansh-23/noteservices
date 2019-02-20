@@ -23,70 +23,59 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 
 @Configuration
 public class ApplicationConfiguration {
-	
+
 	private static final String topicExchangeName = "spring-boot-exchange";
 
-   public static final String queueName = "Notes-for-elastic";
-   
- 
-	
+	public static final String queueName = "Notes-for-elastic";
+
 	@Bean
-	public ModelMapper getmodelmapper()
-	{
+	public ModelMapper getmodelmapper() {
 		return new ModelMapper();
 	}
-	
-	@Bean
-    public Queue queue() {
-        return new Queue(queueName, false);
-    }
-	
-	 @Bean
-	 public TopicExchange exchange() {
-	      return new TopicExchange(topicExchangeName);
-	 }
-	 
-	 @Bean
-	 public Binding binding(Queue queue, TopicExchange exchange) {
-	        return BindingBuilder.bind(queue).to(exchange).with("foo.bar.#");
-	  }
-	 
-	 @Bean
-	 public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
-	            MessageListenerAdapter listenerAdapter) {
-	        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-	        container.setConnectionFactory(connectionFactory);
-	        container.setQueueNames(queueName);
-	        container.setMessageListener(listenerAdapter);
-	        return container;
-	 }
 
-	 @Bean
-	 public MessageListenerAdapter listenerAdapter(Receiver receiver) {
-		// System.out.println("zzzz");
-	        return new MessageListenerAdapter(receiver, "receiveMessage");
-	 }
-	 
-	 @Bean
-	 public RestHighLevelClient getClient()
-	 {
-		 return new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
-	 }
-	 
-	 @Bean
-	 public RestTemplate restTemplate() {
-		 
-			RestTemplate restTemplate = new RestTemplate();
-			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-			converter.setObjectMapper(new ObjectMapper());
-			restTemplate.getMessageConverters().add(converter);
-			return restTemplate;
-		}
-	 
-	 
-	 
-	 
-	
-	
-	
+	@Bean
+	public Queue queue() {
+		return new Queue(queueName, false);
+	}
+
+	@Bean
+	public TopicExchange exchange() {
+		return new TopicExchange(topicExchangeName);
+	}
+
+	@Bean
+	public Binding binding(Queue queue, TopicExchange exchange) {
+		return BindingBuilder.bind(queue).to(exchange).with("foo.bar.#");
+	}
+
+	@Bean
+	public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
+			MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(queueName);
+		container.setMessageListener(listenerAdapter);
+		return container;
+	}
+
+	@Bean
+	public MessageListenerAdapter listenerAdapter(Receiver receiver) {
+		return new MessageListenerAdapter(receiver, "receiveMessage");
+	}
+
+	@Bean
+	public RestHighLevelClient getClient() {
+		return new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
+	}
+
+	@Bean
+	public RestTemplate restTemplate() {
+
+		RestTemplate restTemplate = new RestTemplate();
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		converter.setObjectMapper(new ObjectMapper());
+		restTemplate.getMessageConverters().add(converter);
+		return restTemplate;
+	}
+
 }

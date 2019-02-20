@@ -1,6 +1,10 @@
 package com.user.notesapi.services;
 
 import java.util.List;
+
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.user.notesapi.dto.NotesDTO;
 import com.user.notesapi.dto.SendingNotes;
 import com.user.notesapi.entity.Notes;
@@ -11,6 +15,8 @@ public interface NotesServices {
 	 void updateNote(String token,Notes notes)throws NoteException;
 	 void deleteNote(String token,long id)throws NoteException;
 	/* List<Notes>*/List<SendingNotes> listAllNotes(String token,String archive,String trash)throws NoteException;
-	 public List<Notes> matchedNotes(String token, String searchContent,boolean isArchive,boolean isTrash) throws NoteException;
+	  List<Notes> matchedNotes(String token, String searchContent,boolean isArchive,boolean isTrash) throws NoteException;
+	 void updateNoteImage(long id,MultipartFile file);
+	 Resource getNoteImage(long id);
 }
 

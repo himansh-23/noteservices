@@ -1,34 +1,28 @@
 package com.user.notesapi.util;
 
+import java.io.UnsupportedEncodingException;
+
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import com.user.notesapi.exception.NoteException;
 
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class TokenVerify {
 
-	private static String TOKEN_SECRET="gh2we43jue";
+	private static final String TOKEN_SECRET="gh2we43jue";
+
 	public static long tokenVerifing(String token) throws NoteException
 	{
-		long userid=0;
 		try {
-			Verification verification=JWT.require(Algorithm.HMAC256(TokenVerify.TOKEN_SECRET));
-			JWTVerifier jwtverifier=verification.build();
-			DecodedJWT decodedjwt=jwtverifier.verify(token);
-			Claim claim=decodedjwt.getClaim("ID");
-			userid=claim.asLong();	
+			Verification verification = JWT.require(Algorithm.HMAC256(TokenVerify.TOKEN_SECRET));
+			return verification.build().verify(token).getClaim("ID").asLong();
 			
+		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
+			log.error(e.getMessage(), e);
+			throw new NoteException(123, "Invalid Token");
 		}
-		catch(Exception exception)
-		{
-			throw new NoteException(123,"Invalid Token");
-		}
-			return userid;
 	}
-	
-	
 }

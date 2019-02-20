@@ -2,7 +2,9 @@
 package com.user.notesapi.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.user.notesapi.dto.NotesDTO;
 import com.user.notesapi.dto.SendingNotes;
@@ -25,8 +27,7 @@ import com.user.notesapi.exception.NoteException;
 import com.user.notesapi.response.Response;
 import com.user.notesapi.services.NotesServices;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -37,12 +38,12 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/api/notes")
 @CrossOrigin(origins= {"http://localhost:4200"},exposedHeaders= {"token"})
+@Slf4j
 public class NotesController {
 
 	 @Autowired
 	 NotesServices noteServices;
 	  
-	 static Logger logger=LoggerFactory.getLogger(NotesController.class);
 	/**
 	 * 
 	 * @param notesDTO
@@ -54,12 +55,11 @@ public class NotesController {
 	public ResponseEntity<Response> createNote(@RequestBody NotesDTO notesDTO,@RequestHeader("token")String token)throws NoteException,Exception
 	{
 		//RabbitMq Server Send
-		logger.info("Rabbit Template Send");
+		log.info("Rabbit Template Send");
 		
 		noteServices.createNote(token, notesDTO);
-		logger.info("Data Send To DataBase");
+		log.info("Data Send To DataBase");
 		Response response=new Response();
-		
 		response.setStatusCode(166);
 		response.setStatusMessage("Note Created Successfully");
 		return new ResponseEntity<Response>(response,HttpStatus.OK);
@@ -75,7 +75,6 @@ public class NotesController {
 	@PutMapping
 	public ResponseEntity<Response> updateNote(@RequestBody Notes notes,@RequestHeader("token")String token)throws NoteException
 	{ 
-		//String token = request.getHeader("Authorization");d
 		noteServices.updateNote(token,notes);
 		Response response=new Response();
 		response.setStatusCode(166);
@@ -111,11 +110,10 @@ public class NotesController {
 	@GetMapping
 	public /*ResponseEntity<List<Notes>> */ ResponseEntity<List<SendingNotes>> /*void*/ listAllNotes(@RequestHeader("token")String token,@RequestParam String archive,@RequestParam String trash)throws NoteException //@PathVariable("value") String value,
 	{
+		System.out.println(archive+"   "+trash);
 		List<SendingNotes> notesall=noteServices.listAllNotes(token, archive, trash);
 		return new ResponseEntity<List<SendingNotes>>(notesall,HttpStatus.OK);
 		
-	//	List<Notes> list = noteServices.listAllNotes(token,archive,trash);
-		//return new ResponseEntity<List<Notes>>(null,HttpStatus.OK);
 	} 
 	/**
 	 * @Purpose For Searching Notes With Give Words
@@ -132,6 +130,23 @@ public class NotesController {
 	{
 		List<Notes> list=noteServices.matchedNotes(token,text,Boolean.valueOf(isArchive),Boolean.valueOf(isTrash));
 		return new ResponseEntity<List<Notes>>(list,HttpStatus.OK);
+	}
+	
+	@PostMapping("/imageupload/{id}")
+	public ResponseEntity<Response> noteImageSave(@RequestHeader("token") String token,@RequestParam("file") MultipartFile file,@PathVariable String id) throws NoteException 
+	{	
+		System.out.println("helo");
+		noteServices.updateNoteImage(Long.valueOf(id), file);
+		Response response = new Response();
+		response.setStatusCode(166);
+		response.setStatusMessage("Image Uploaded");
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
+	}
+	
+	@GetMapping("/imageget/{id}")
+	public Resource getProfilePic(@PathVariable long id) throws NoteException
+	{
+		return noteServices.getNoteImage(Long.valueOf(id));	
 	}
 	
 	

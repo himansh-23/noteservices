@@ -1,6 +1,11 @@
 package com.user.notesapi.services;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,17 +13,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.user.notesapi.appconfig.ApplicationConfiguration;
 import com.user.notesapi.dto.CollabUserDetails;
 import com.user.notesapi.dto.NotesDTO;
@@ -65,17 +73,17 @@ public class NotesServicesImpl implements NotesServices {
 	 
 	 @Value("${spring.ROOT_URI}")
 	 private String ROOT_URI; 
+	 
+	 private final Path rootLocation =Paths.get("/home/administrator/Desktop/upload-files");
+
 	
 	public void createNote(String token,NotesDTO notesDTO)throws NoteException
 	{
 		long id=TokenVerify.tokenVerifing(token);
 		notesDTO.setUserid(id);
 		Notes note = modelMapper.map(notesDTO, Notes.class);
-		note.setCreateStamp(LocalDate.now());
-		note.setLastModifiedStamp(LocalDate.now());
 		note=notesRepository.save(note);
-			rabbitTemplate.convertAndSend(ApplicationConfiguration.queueName, note);
-			//System.out.println(obj.writeValueAsString(note));
+		rabbitTemplate.convertAndSend(ApplicationConfiguration.queueName, note);
 	}
 	
 	@Override
@@ -83,7 +91,6 @@ public class NotesServicesImpl implements NotesServices {
 	{
 		TokenVerify.tokenVerifing(token);
 		notes.setLastModifiedStamp(LocalDate.now());
-		System.out.println(notes.isArchive());
 		Notes updateNote=notesRepository.save(notes);
 		elasticService.update(updateNote);
 	}
@@ -94,17 +101,15 @@ public class NotesServicesImpl implements NotesServices {
 		TokenVerify.tokenVerifing(token);
 		Notes idnote=notesRepository.findById(notesId).get();
 		idnote.getLabels().clear();
-		labelRepository.findAll().forEach(x ->this.removeNote(idnote,x));
+		//labelRepository.findAll().forEach(x ->this.removeNote(idnote,x));
 		notesRepository.delete(idnote);
 		elasticService.delete(notesId);
 	}
 	
 	@Override
-	public/* List<Notes>*/ List<SendingNotes> listAllNotes(String token,String archive,String trash)throws NoteException //,String value
+	public List<SendingNotes> listAllNotes(String token,String archive,String trash)throws NoteException 
 	{	
 		long id=TokenVerify.tokenVerifing(token);
-		//List<Notes> notes=;
-		//return notesRepository.findAllById(id,Boolean.valueOf(archive),Boolean.valueOf(trash)).orElse( new ArrayList<Notes>());
 		List<Notes> notesList=notesRepository.findAllById(id,Boolean.valueOf(archive),Boolean.valueOf(trash)).orElse( new ArrayList<Notes>());
 		notesList.addAll(collabservice.getCollabNotes(token));
 		
@@ -168,4 +173,40 @@ public class NotesServicesImpl implements NotesServices {
 			List<Notes> list=service.multipleFieldQuery(fields, searchContent, restriction, "notesdata", "notes");
 			return list;
 	}
+	
+	@Override
+	public void updateNoteImage(long id,MultipartFile file)
+	{
+		Notes note=notesRepository.findById(id).get();
+		UUID uuid = UUID.randomUUID();
+		String uuidString=uuid.toString();
+		try {
+			Files.copy(file.getInputStream(), this.rootLocation.resolve(uuidString),StandardCopyOption.REPLACE_EXISTING);
+			note.setImage(uuid.toString());
+			notesRepository.save(note);
+		}
+		catch (Exception e) 
+		{	
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
+	
+	public Resource getNoteImage(long id) {
+		Notes note = notesRepository.findById(id).get();
+		Path file = rootLocation.resolve(note.getImage());
+		try {
+			Resource resource = new UrlResource(file.toUri());
+			if (resource.exists() || resource.isReadable()) {
+				return resource;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 }

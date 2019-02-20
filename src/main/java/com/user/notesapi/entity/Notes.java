@@ -42,10 +42,10 @@ public class Notes implements Serializable {
 	private String content;
 	
 	@NotNull
-	private LocalDate createStamp;
+	private LocalDate createStamp=LocalDate.now();
 
 	@NotNull
-	private LocalDate lastModifiedStamp;
+	private LocalDate lastModifiedStamp=LocalDate.now();
 	
 	@Column(columnDefinition="tinyint(1) default 0 not null")
 	private boolean isPinned;
