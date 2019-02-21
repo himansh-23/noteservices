@@ -110,7 +110,6 @@ public class NotesController {
 	@GetMapping
 	public /*ResponseEntity<List<Notes>> */ ResponseEntity<List<SendingNotes>> /*void*/ listAllNotes(@RequestHeader("token")String token,@RequestParam String archive,@RequestParam String trash)throws NoteException //@PathVariable("value") String value,
 	{
-		System.out.println(archive+"   "+trash);
 		List<SendingNotes> notesall=noteServices.listAllNotes(token, archive, trash);
 		return new ResponseEntity<List<SendingNotes>>(notesall,HttpStatus.OK);
 		

@@ -43,157 +43,130 @@ import com.user.notesapi.util.TokenVerify;
 @Service
 @PropertySource("classpath:application.properties")
 public class NotesServicesImpl implements NotesServices {
-	
+
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	@Autowired
 	private NotesRepository notesRepository;
-	
+
 	@Autowired
 	private LabelsRepository labelRepository;
-	
+
 	@Autowired
 	private CollaboratorService collabservice;
-	
+
 	@Autowired
 	private CollabRepository collabRepo;
-	
+
 	@Autowired
 	private ElasticService elasticService;
-	 
-	 @Autowired
-	 private RabbitTemplate rabbitTemplate;
-	 
-	 @Autowired
-	 private ElasticService service;
-	 
-	 @Autowired
-	 private RestTemplate restTemplate;
-	 
-	 @Value("${spring.ROOT_URI}")
-	 private String ROOT_URI; 
-	 
-	 private final Path rootLocation =Paths.get("/home/administrator/Desktop/upload-files");
 
-	
-	public void createNote(String token,NotesDTO notesDTO)throws NoteException
-	{
-		long id=TokenVerify.tokenVerifing(token);
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	private ElasticService service;
+
+	@Autowired
+	private RestTemplate restTemplate;
+
+	@Value("${spring.ROOT_URI}")
+	private String ROOT_URI;
+
+	private final Path rootLocation = Paths.get("/home/administrator/Desktop/upload-files");
+
+	public void createNote(String token, NotesDTO notesDTO) throws NoteException {
+		long id = TokenVerify.tokenVerifing(token);
 		notesDTO.setUserid(id);
 		Notes note = modelMapper.map(notesDTO, Notes.class);
-		note=notesRepository.save(note);
+		note = notesRepository.save(note);
 		rabbitTemplate.convertAndSend(ApplicationConfiguration.queueName, note);
 	}
-	
+
 	@Override
-	public void updateNote(String token,Notes notes)throws NoteException
-	{
+	public void updateNote(String token, Notes notes) throws NoteException {
 		TokenVerify.tokenVerifing(token);
 		notes.setLastModifiedStamp(LocalDate.now());
-		Notes updateNote=notesRepository.save(notes);
+		Notes updateNote = notesRepository.save(notes);
 		elasticService.update(updateNote);
 	}
-	
+
 	@Override
-	public void deleteNote(String token,long notesId) throws NoteException
-	{
+	public void deleteNote(String token, long notesId) throws NoteException {
 		TokenVerify.tokenVerifing(token);
-		Notes idnote=notesRepository.findById(notesId).get();
-		idnote.getLabels().clear();
-		//labelRepository.findAll().forEach(x ->this.removeNote(idnote,x));
+		Notes idnote = notesRepository.findById(notesId).get();
+		idnote.getLabels().forEach(x -> x.getNotes().remove(idnote));
 		notesRepository.delete(idnote);
 		elasticService.delete(notesId);
 	}
-	
+
 	@Override
-	public List<SendingNotes> listAllNotes(String token,String archive,String trash)throws NoteException 
-	{	
-		long id=TokenVerify.tokenVerifing(token);
-		List<Notes> notesList=notesRepository.findAllById(id,Boolean.valueOf(archive),Boolean.valueOf(trash)).orElse( new ArrayList<Notes>());
+	public List<SendingNotes> listAllNotes(String token, String archive, String trash) throws NoteException {
+		long id = TokenVerify.tokenVerifing(token);
+		List<Notes> notesList = notesRepository.findAllById(id, Boolean.valueOf(archive), Boolean.valueOf(trash))
+				.orElse(new ArrayList<Notes>());
 		notesList.addAll(collabservice.getCollabNotes(token));
-		
-		List<SendingNotes> xyz=new ArrayList<SendingNotes>();
-	
-		for(int i=0;i<notesList.size();i++)
-		{
-			List<BigInteger> ll=new ArrayList<BigInteger>();
-			Optional<List<Object>> optionalList=collabRepo.findAllUsersOfNote(notesList.get(i).getId());
-			SendingNotes zz=null;
-			if(optionalList.isPresent())
-			{
-				optionalList.get().stream().forEach(x -> ll.add((BigInteger)x));
-				ResponseEntity<CollabUserDetails[]> response = restTemplate.postForEntity(ROOT_URI,ll,CollabUserDetails[].class);
-				zz=new SendingNotes(notesList.get(i),Arrays.asList(response.getBody())); //ll at response.getBody()
+
+		List<SendingNotes> xyz = new ArrayList<SendingNotes>();
+
+		for (int i = 0; i < notesList.size(); i++) {
+			List<BigInteger> ll = new ArrayList<BigInteger>();
+			Optional<List<Object>> optionalList = collabRepo.findAllUsersOfNote(notesList.get(i).getId());
+			SendingNotes zz = null;
+			if (optionalList.isPresent()) {
+				optionalList.get().stream().forEach(x -> ll.add((BigInteger) x));
+				ResponseEntity<CollabUserDetails[]> response = restTemplate.postForEntity(ROOT_URI, ll,
+						CollabUserDetails[].class);
+				zz = new SendingNotes(notesList.get(i), Arrays.asList(response.getBody())); // ll at response.getBody()
+			} else {
+				zz = new SendingNotes(notesList.get(i), new ArrayList<CollabUserDetails>());
+
 			}
-			else {
-				zz=new SendingNotes(notesList.get(i),new ArrayList<CollabUserDetails>()); 
-				
-			}
-			xyz.add(zz);	
+			xyz.add(zz);
 		}
-			
-			return xyz;
-		
-//		return notesList;				//ArrayList<Notes::new
-	}					
-	
-	
-	
-	/*Optional<List<Long>> noteIds=collabRepository.findAllById(userId);
-	if(noteIds.isPresent())
-	{
-		return notesRepository.findAllCollabNotes(noteIds.get()).get();
+
+		return xyz;
+
 	}
-	else
-	{
-		return new ArrayList<Notes>();
-	}*/
-	
-	
-	private void removeNote(Notes notes,Labels l)
-	{
+
+	private void removeNote(Notes notes, Labels l) {
 		l.getNotes().remove(notes);
 		notesRepository.save(notes);
 	}
-// eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJRCI6MzV9.l7OjtnAX5rSlX06Cu-SN_xGwRH8sKrPrmtfWT_JAkJI
-	
+
 	@Override
-	public List<Notes> matchedNotes(String token, String searchContent,boolean isArchive,boolean isTrash) throws NoteException
-	{
-			long userid=TokenVerify.tokenVerifing(token);
-			Map<String,Float> fields=new HashMap<String, Float>();
-			fields.put("title", 3.0f);
-			fields.put("content", 2.0f);
-			
-			Map<String,Object> restriction=new HashMap<String, Object>();
-			restriction.put("archive", isArchive);
-			restriction.put("trash",isTrash);
-			restriction.put("userid",userid);
-			List<Notes> list=service.multipleFieldQuery(fields, searchContent, restriction, "notesdata", "notes");
-			return list;
+	public List<Notes> matchedNotes(String token, String searchContent, boolean isArchive, boolean isTrash)
+			throws NoteException {
+		long userid = TokenVerify.tokenVerifing(token);
+		Map<String, Float> fields = new HashMap<String, Float>();
+		fields.put("title", 3.0f);
+		fields.put("content", 2.0f);
+
+		Map<String, Object> restriction = new HashMap<String, Object>();
+		restriction.put("archive", isArchive);
+		restriction.put("trash", isTrash);
+		restriction.put("userid", userid);
+		List<Notes> list = service.multipleFieldQuery(fields, searchContent, restriction, "notesdata", "notes");
+		return list;
 	}
-	
+
 	@Override
-	public void updateNoteImage(long id,MultipartFile file)
-	{
-		Notes note=notesRepository.findById(id).get();
+	public void updateNoteImage(long id, MultipartFile file) {
+		Notes note = notesRepository.findById(id).get();
 		UUID uuid = UUID.randomUUID();
-		String uuidString=uuid.toString();
+		String uuidString = uuid.toString();
 		try {
-			Files.copy(file.getInputStream(), this.rootLocation.resolve(uuidString),StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(file.getInputStream(), this.rootLocation.resolve(uuidString),
+					StandardCopyOption.REPLACE_EXISTING);
 			note.setImage(uuid.toString());
 			notesRepository.save(note);
-		}
-		catch (Exception e) 
-		{	
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
-		
+
 	}
-	
+
 	public Resource getNoteImage(long id) {
 		Notes note = notesRepository.findById(id).get();
 		Path file = rootLocation.resolve(note.getImage());
@@ -207,6 +180,5 @@ public class NotesServicesImpl implements NotesServices {
 		}
 		return null;
 	}
-	
-	
+
 }

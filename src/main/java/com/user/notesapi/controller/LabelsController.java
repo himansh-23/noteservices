@@ -59,9 +59,8 @@ public class LabelsController {
 		labelService.createLabel(token, label);
 		Response response=new Response();
 		response.setStatusCode(166);
-		
 		response.setStatusMessage("Label Created");
-		rabbitTemplate.convertAndSend(ApplicationConfiguration.queueName,"th is mesdfsd");
+		//rabbitTemplate.convertAndSend(ApplicationConfiguration.queueName,"th is mesdfsd");
 		return new ResponseEntity<Response>(response,HttpStatus.OK);
 	}
 	
@@ -75,7 +74,6 @@ public class LabelsController {
 	@PutMapping()
 	public ResponseEntity <Response> updateLabel(@RequestBody Labels label,@RequestHeader String token) throws NoteException
 	{
-		//System.out.println(label);
 			labelService.updateLabel(token, label);
 		 	Response response=new Response();
 			response.setStatusCode(166);
@@ -164,6 +162,7 @@ public class LabelsController {
 			List<Labels> list=labelService.listLabels(token);
 		return new ResponseEntity<List<Labels>>(list,HttpStatus.OK);
 	}
+	
 	/**
 	 * 
 	 * @param labelid
@@ -173,7 +172,7 @@ public class LabelsController {
 	@DeleteMapping
 	public ResponseEntity<Response> deleteLabel(@RequestHeader String token,@RequestParam String labelId) throws NoteException
 	{
-		System.out.println("api hit");
+	//	System.out.println("api hit");
 			labelService.deleteLabel(token, labelId);
 			Response response = new Response();
 			response.setStatusCode(166);

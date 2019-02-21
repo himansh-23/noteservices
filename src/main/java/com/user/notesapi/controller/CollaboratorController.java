@@ -29,10 +29,9 @@ public class CollaboratorController {
 	private CollaboratorService collabservice;
 	
 	@PostMapping
-	public ResponseEntity<Response> addCollabrator(/*@RequestHeader String token,*/
+	public ResponseEntity<Response> addCollabrator(@RequestHeader String token,
 			@RequestParam long sharedUserId ,@RequestParam long sharedNoteId) throws NoteException
 	{
-		String token="sfd";
 		long res=collabservice.addPersonToNote(token, sharedNoteId, sharedUserId);
 		Response response=new Response();
 		if(res==-1L)
