@@ -9,5 +9,5 @@ public interface CollaboratorService {
 
 	Long addPersonToNote(String token,Long noteId,Long sharedNote) throws NoteException;
 	List<Notes> getCollabNotes(String token) throws NoteException;
-	void deleteCollabNote(String token,long noteId) throws NoteException;
+	boolean deleteCollabNote(String token,long noteId,String email) throws NoteException;
 }
