@@ -58,7 +58,6 @@ public class CollaboratorServiceImpl implements CollaboratorService {
 	public List<Notes> getCollabNotes(String token) throws NoteException {
 		long userId=TokenVerify.tokenVerifing(token);
 		
-		//List<Long> noteIds=collabRepository.findAllById(userId).get();
 		Optional<List<Long>> noteIds=collabRepository.findAllById(userId);
 		if(noteIds.isPresent())
 		{
@@ -82,7 +81,7 @@ public class CollaboratorServiceImpl implements CollaboratorService {
 		params.put("email", email);
 		ResponseEntity<Long> response=restTemplate.getForEntity(ROOT_URI2+"?email="+email, Long.class);
 		long userIdFromEmail=response.getBody();
-		if(userIdFromEmail == userId )
+		if(userIdFromEmail == userId)
 		{
 		 long collabid=collabRepository.findBy(note.getId(), userIdFromEmail).get();
 		 collabRepository.deleteById(collabid);

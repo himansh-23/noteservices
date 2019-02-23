@@ -13,4 +13,7 @@ public interface LabelsRepository extends JpaRepository<Labels, Long>{
 	@Query(value="select * from labels where userid= :userid ",nativeQuery=true) // :str = true
 	Optional<List<Labels>> findAllById(@Param("userid")long userid); //@Param("str") String str
 	
+	@Query(value="select id from labels where label_name =:labelname",nativeQuery=true)
+	Optional<Long> findIdByLabelName (@Param("labelname") String labelName);
+	
 }

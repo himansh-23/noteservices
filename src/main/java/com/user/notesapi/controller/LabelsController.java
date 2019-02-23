@@ -149,16 +149,6 @@ public class LabelsController {
 	@GetMapping
 	public ResponseEntity<List<Labels>> getAllLabels(@RequestHeader String token) throws NoteException
 	{
-////		long userid=0;
-////		try {
-////		 userid=TokenVerify.tokenVerifing(token);
-////		}
-////		catch(Exception e)
-////		{
-////			throw new NoteException(123,e.getMessage()); 
-////		}
-////		List<Labels> list = labelrepo.findAllById(userid).get();
-//			labelService.listLabels(token);
 			List<Labels> list=labelService.listLabels(token);
 		return new ResponseEntity<List<Labels>>(list,HttpStatus.OK);
 	}
@@ -172,7 +162,6 @@ public class LabelsController {
 	@DeleteMapping
 	public ResponseEntity<Response> deleteLabel(@RequestHeader String token,@RequestParam String labelId) throws NoteException
 	{
-	//	System.out.println("api hit");
 			labelService.deleteLabel(token, labelId);
 			Response response = new Response();
 			response.setStatusCode(166);

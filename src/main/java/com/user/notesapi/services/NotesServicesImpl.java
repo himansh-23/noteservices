@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -104,6 +105,7 @@ public class NotesServicesImpl implements NotesServices {
 	@Override
 	public List<SendingNotes> listAllNotes(String token, String archive, String trash) throws NoteException {
 		long id = TokenVerify.tokenVerifing(token);
+		
 		List<Notes> notesList = notesRepository.findAllById(id, Boolean.valueOf(archive), Boolean.valueOf(trash))
 				.orElse(new ArrayList<Notes>());
 		notesList.addAll(collabservice.getCollabNotes(token));
@@ -179,6 +181,17 @@ public class NotesServicesImpl implements NotesServices {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public List<SendingNotes> listLabelNotes(String token,String label) {
+		long labelId=labelRepository.findIdByLabelName(label).get();
+														
+		List<Notes> list=labelRepository.findById(labelId).get().getNotes().stream().collect(Collectors.toList());												
+		List<SendingNotes> xyz = new ArrayList<SendingNotes>();
+		
+		list.stream().forEach( x -> xyz.add(new SendingNotes(x,  new ArrayList<CollabUserDetails>())));
+		return xyz;
 	}
 
 }

@@ -148,5 +148,14 @@ public class NotesController {
 		return noteServices.getNoteImage(Long.valueOf(id));	
 	}
 	
+	@GetMapping("/labelnote")
+	public ResponseEntity<List<SendingNotes>> getLabeldNote(@RequestParam String label)
+	{
+		String token="sd";
+		List<SendingNotes> notesall=noteServices.listLabelNotes(token,label);
+		return new ResponseEntity<List<SendingNotes>>(notesall,HttpStatus.OK);
+		
+	}
+	
 	
 }
