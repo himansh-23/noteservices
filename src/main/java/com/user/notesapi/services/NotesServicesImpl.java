@@ -184,9 +184,9 @@ public class NotesServicesImpl implements NotesServices {
 	}
 
 	@Override
-	public List<SendingNotes> listLabelNotes(String token,String label) {
+	public List<SendingNotes> listLabelNotes(String token,String label)throws NoteException {
 		long labelId=labelRepository.findIdByLabelName(label).get();
-														
+			TokenVerify.tokenVerifing(token);						
 		List<Notes> list=labelRepository.findById(labelId).get().getNotes().stream().collect(Collectors.toList());												
 		List<SendingNotes> xyz = new ArrayList<SendingNotes>();
 		

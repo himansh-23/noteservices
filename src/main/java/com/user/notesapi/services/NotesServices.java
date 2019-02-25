@@ -26,5 +26,5 @@ public interface NotesServices {
 	void updateNoteImage(long id, MultipartFile file);
 
 	Resource getNoteImage(long id);
-	List<SendingNotes> listLabelNotes(String token,String label);
+	List<SendingNotes> listLabelNotes(String token,String label) throws NoteException;
 }
