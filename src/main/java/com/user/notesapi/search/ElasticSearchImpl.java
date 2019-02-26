@@ -128,6 +128,7 @@ public class ElasticSearchImpl implements ElasticService {
 		
 		//response.getHits().spliterator().forEachRemaining(System.out::println);
 		List<Notes> searchContent=new ArrayList<Notes>();
+		//response.getHits().spliterator()
 		response.getHits().spliterator().forEachRemaining(x ->{
 			try {
 				searchContent.add(objectMapper.readValue(x.getSourceAsString(), Notes.class));
@@ -156,6 +157,7 @@ public class ElasticSearchImpl implements ElasticService {
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 //		boolQueryBuilder.should(QueryBuilders.multiMatchQuery(text));
 		boolQueryBuilder.must(QueryBuilders.queryStringQuery(text).fields(fields));
+	
 //text).lenient(true).fields(fields));
 //	fields.forEach((fil,value)->{
 //			boolQueryBuilder

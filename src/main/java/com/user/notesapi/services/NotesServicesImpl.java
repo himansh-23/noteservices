@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -143,7 +145,7 @@ public class NotesServicesImpl implements NotesServices {
 		long userid = TokenVerify.tokenVerifing(token);
 		Map<String, Float> fields = new HashMap<String, Float>();
 		fields.put("title", 3.0f);
-		fields.put("content", 2.0f);
+		fields.put("content", 2.0f);  
 
 		Map<String, Object> restriction = new HashMap<String, Object>();
 		restriction.put("archive", isArchive);
@@ -189,7 +191,6 @@ public class NotesServicesImpl implements NotesServices {
 			TokenVerify.tokenVerifing(token);						
 		List<Notes> list=labelRepository.findById(labelId).get().getNotes().stream().collect(Collectors.toList());												
 		List<SendingNotes> xyz = new ArrayList<SendingNotes>();
-		
 		list.stream().forEach( x -> xyz.add(new SendingNotes(x,  new ArrayList<CollabUserDetails>())));
 		return xyz;
 	}

@@ -151,7 +151,6 @@ public class NotesController {
 	@GetMapping("/labelnote")
 	public ResponseEntity<List<SendingNotes>> getLabeldNote(@RequestHeader String token,@RequestParam String label)throws NoteException
 	{
-		
 		List<SendingNotes> notesall=noteServices.listLabelNotes(token,label);
 		return new ResponseEntity<List<SendingNotes>>(notesall,HttpStatus.OK);
 		
