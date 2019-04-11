@@ -25,7 +25,6 @@ public class Receiver {
 	  @Autowired
 	  private ObjectMapper mapper;
 	  
-	 private CountDownLatch latch = new CountDownLatch(1);
 /**
  * @Purpose All Data Coming With message
  * @param message
@@ -34,16 +33,9 @@ public class Receiver {
 	    	
 	    	System.out.println(message);
 	    	System.out.println("Received <" + message + ">");
-	        latch.countDown();
 	        // Inserting Data To Elastic Search
 	        service.save(message);
 	    }
-/**
- * @Purpose Making Thread If Data Is Huge
- * @return void
- */
-	    public CountDownLatch getLatch() {
-	        return latch;
-	    }
+
 
 }
